@@ -69,25 +69,12 @@ history = model.fit(
     shuffle=False
 )
 
-fig = plt.figure()
-ax = fig.add_subplot()
-ax.plot(history.history['loss'], label='train')
-ax.plot(history.history['val_loss'], label='test')
-ax.legend()
-
 
 # Defining the Anomaly Value
 
 # Calculation of the loss between the predicted and the actual closing price data:
 X_train_pred = model.predict(X_train)
 train_mae_loss = np.mean(np.abs(X_train_pred - X_train), axis=1)
-
-# We will then plot the loss distribution to decide on the threshold for our anomaly detection.
-fig = plt.figure(figsize=(20,10))
-sns.set(style="darkgrid")
-ax = fig.add_subplot()
-sns.displot(train_mae_loss, bins=50, kde=True)
-ax.set_title('Loss Distribution Training Set ', fontweight ='bold')
 
 # Calculate the Mean Absolute Error
 X_test_pred = model.predict(X_test)
@@ -98,12 +85,6 @@ test_score_df['loss'] = test_mae_loss
 test_score_df['threshold'] = THRESHOLD
 test_score_df['anomaly'] = test_score_df.loss > test_score_df.threshold
 test_score_df['close'] = test[TIME_STEPS:].close
-
-fig = plt.figure()
-ax = fig.add_subplot()
-ax.plot(test_score_df.index, test_score_df.loss, label='loss')
-ax.plot(test_score_df.index, test_score_df.threshold, label='threshold')
-ax.legend()
 
 anomalies = test_score_df[test_score_df.anomaly == True]
 anomalies.head()
